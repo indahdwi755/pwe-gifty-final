@@ -91,7 +91,7 @@
 </head>
 <body>
     <header>
-        <h1>🌸 Selamat Datang di Toko Cintaku 🌸</h1>
+        <h1>🌸 Selamat Datang di Toko GIFTY 🌸</h1>
         <nav>
             <a href="{{ route('home') }}">Beranda</a>
             <a href="#">Kategori</a>
