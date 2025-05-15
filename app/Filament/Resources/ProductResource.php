@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Toggle;
 
 class ProductResource extends Resource
 {
@@ -23,51 +24,55 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                //card
+                // Card wrapper
                 Forms\Components\Card::make()
                     ->schema([
 
-                        //image
+                        // Image upload
                         Forms\Components\FileUpload::make('image')
                             ->label('Image')
                             ->required(),
 
-                        //grid
+                        // Main grid for fields
                         Forms\Components\Grid::make(5)
                             ->schema([
 
-                                //name
+                                // Name
                                 Forms\Components\TextInput::make('name')
                                     ->label('Name')
                                     ->placeholder('Name')
                                     ->required(),
 
-                                //category
+                                // Category relation
                                 Forms\Components\Select::make('category_id')
                                     ->label('Category')
                                     ->relationship('category', 'name')
                                     ->required(),
-                                
-                                //description
+
+                                // Description
                                 Forms\Components\TextInput::make('description')
-                                ->label('Description')
-                                ->placeholder('Description')
-                                ->required(),
+                                    ->label('Description')
+                                    ->placeholder('Description')
+                                    ->required(),
 
-                                //stock
+                                // Stock
                                 Forms\Components\TextInput::make('stock')
-                                ->label('Stock')
-                                ->placeholder('Stock')
-                                ->required(),
+                                    ->label('Stock')
+                                    ->placeholder('Stock')
+                                    ->required(),
 
-                                //price
+                                // Price
                                 Forms\Components\TextInput::make('price')
-                                ->label('Price')
-                                ->placeholder('Price')
-                                ->required(),
+                                    ->label('Price')
+                                    ->placeholder('Price')
+                                    ->required(),
+
+                                Toggle::make('is_promo')
+                                    ->label('Promo')
+                                    ->default(false),
                             ]),
 
-                    ])
+                    ]),
             ]);
     }
 
@@ -81,9 +86,16 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('description'),
                 Tables\Columns\TextColumn::make('stock'),
                 Tables\Columns\TextColumn::make('price'),
+
+                // Promo indicator
+                Tables\Columns\BooleanColumn::make('is_promo')
+                    ->label('Promo')
+                    ->sortable(),
             ])
             ->filters([
-                //
+                // Optionally add filter for promo status
+                Tables\Filters\TernaryFilter::make('is_promo')
+                    ->label('Promo Status'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

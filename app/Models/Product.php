@@ -14,6 +14,11 @@ class Product extends Model
         'stock',
         'price',
         'image',
+        'is_promo',
+    ];
+
+    protected $casts = [
+        'is_promo' => 'boolean',   // ■ pastikan casting Boolean
     ];
 
     public function category()

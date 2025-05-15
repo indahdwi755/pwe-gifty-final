@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('stock');
             $table->unsignedBigInteger('price');
             $table->string('image');
+            $table->boolean('is_promo')->default(false);
             $table->timestamps();
         });
     }

@@ -1,117 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produk Kami</title>
+    <title>GIFTY</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zantroke&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #fff0f5;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right,rgb(255, 252, 253), rgba(255, 192, 203, 0.2));
         }
 
-        header {
-            background-color: #ffb6c1;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        nav a {
-            margin: 0 10px;
-            color: white;
-            text-decoration: none;
+        .brand {
+            font-family: 'Zantroke', sans-serif;
+            font-size: 2.5rem;
             font-weight: bold;
+            background: linear-gradient(to right, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        section {
-            padding: 40px 20px;
+        .search-box {
+            position: relative;
         }
 
-        h2 {
+        .search-box input {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            width: 500px;
+            background-color: transparent;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .nav-top .login-btn {
+            border: 1px solid #000;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            background-color: transparent;
+            border-radius: 6px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 2rem;
             text-align: center;
-            color: #d63384;
-            margin-bottom: 30px;
-        }
-
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: auto;
         }
 
         .product-card {
-            background-color: #ffe4e1;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease-in-out;
-            text-align: center;
-            padding-bottom: 15px;
-        }
-
-        .product-card:hover {
-            transform: scale(1.03);
+            padding: 1rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 100%;
         }
 
         .product-card img {
             width: 100%;
             height: 180px;
-            object-fit: cover;
+            object-fit: contain;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            padding: 0.5rem;
         }
 
-        .product-card h3 {
-            margin: 10px 0 5px;
-            color: #c2185b;
+        .product-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #222;
+            margin-top: 0.5rem;
+            text-align: left;
         }
 
-        .product-card p {
-            margin: 0;
-            color: #555;
+        .product-description {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+            text-align: left;
         }
 
-        .product-card a {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 12px;
-            background-color: #f06292;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
+        .product-price {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #d0021b;
+            margin-top: 0.5rem;
+            text-align: left;
         }
 
-        .product-card a:hover {
+        .buy-button {
+            margin-top: 0.75rem;
+            text-align: right;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
             background-color: #e91e63;
+            color: white;
+            padding: 3px 6px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .wishlist-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .footer-box {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .navbar-links a {
+            margin-right: 1.5rem;
+            text-decoration: none;
+            color: black;
         }
     </style>
 </head>
-<body>
-    <header>
-        <h1>🌸 Selamat Datang di Toko GIFTY 🌸</h1>
-        <nav>
-            <a href="{{ route('home') }}">Beranda</a>
-            <a href="#">Kategori</a>
-            <a href="#">Promo</a>
-            <a href="#">Akun</a>
-        </nav>
-    </header>
 
-    <section>
-        <h2>💕 Pilihan Produk Terbaik Untukmu 💕</h2>
-        <div class="products">
-            @foreach($products as $product)
-                <div class="product-card">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                    <h3>{{ $product->name }}</h3>
-                    <p>Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                    <a href="{{ route('product.show', ['product' => $product->id]) }}">Lihat Detail</a>
-                </div>
-            @endforeach
+<body class="container-fluid">
+    <!-- Top Nav -->
+    <div class="d-flex justify-content-between align-items-center p-3 nav-top">
+        <div class="d-flex align-items-center">
+            <div class="brand me-4">GIFTY</div>
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+                <i class="fas fa-search"></i>
+            </div>
         </div>
-    </section>
+        <div class="d-flex align-items-center">
+            <button class="login-btn me-3">Logout</button>
+        </div>
+    </div>
+
+    <!-- Navbar Links -->
+    <div class="mt-3">
+        <div class="d-flex navbar-links">
+            <a href="#">Home</a>
+            <a href="#">Product</a>
+            <a href="#">Category</a>
+        </div>
+    </div>
+
+    <!-- Promo Section (Slider) -->
+<div class="mt-4">
+  <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      @foreach ($promos as $index => $promo)
+        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+          <img
+            src="{{ asset('storage/' . $promo->image) }}"
+            class="d-block rounded carousel-image"
+            alt="{{ $promo->name }}"
+          >
+          <div class="carousel-caption d-none d-md-block">
+            <a href="#" class="btn btn-light">SHOP NOW</a>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#promoCarousel"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#promoCarousel"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<style>
+
+  #promoCarousel .carousel-image {
+  width: 80%;         /* Lebar gambar 80% dari kontainer */
+  max-width: 800px;   /* Batas maksimal lebar (opsional) */
+  height: auto;
+  margin: 0 auto;     /* Pusatkan gambar */
+  display: block;
+}
+ 
+  #promoCarousel .carousel-caption {
+    background: none !important;  /* Hilangkan kotak putih */
+    padding: 0;                    /* Hapus padding */
+    bottom: 20px;                  /* Jarak dari bawah slide */
+    left: 50%;                     /* Tengah horizontal */
+    transform: translateX(-50%);   /* Pusat tombol */
+    width: auto;
+  }
+
+  /* Tombol SHOP NOW */
+  #promoCarousel .carousel-caption .btn {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  /* Navigational icons agar kontras */
+  #promoCarousel .carousel-control-prev-icon,
+  #promoCarousel .carousel-control-next-icon {
+    filter: invert(1);
+  }
+</style>
+
+
+    <!-- Bestie Deals -->
+    <div class="section-title">Bestie Deals For You</div>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        @foreach ($products as $product)
+            <div class="col">
+                <div class="product-card">
+                    <div class="discount-badge">10%</div>
+                    <div class="wishlist-icon"><i class="far fa-heart"></i></div>
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                    <div class="product-name">{{ $product->name }}</div>
+                    <div class="product-description">{{ $product->description }}</div>
+                    <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    <div class="buy-button">
+                        <button class="btn btn-sm btn-danger">Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Footer Box -->
+    <div class="footer-box">
+        <h3>Gifty</h3>
+        <p>Situs gift terlengkap dan terpercaya #1 di Indonesia</p>
+        <div>
+            <i class="fab fa-facebook fa-lg me-3"></i>
+            <i class="fab fa-instagram fa-lg me-3"></i>
+            <i class="fab fa-youtube fa-lg me-3"></i>
+            <i class="fab fa-twitter fa-lg"></i>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <h5>Information</h5>
+            <ul>
+                <li>About Us</li>
+                <li>Terms & Conditions</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h5>Payment Method</h5>
+            <ul>
+                <li>Bank Transfer</li>
+                <li>E-Wallet</li>
+                <li>Credit Card</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h5>Customer Care</h5>
+            <ul>
+                <li>FAQ</li>
+                <li>Contact Us</li>
+                <li>Return Policy</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
