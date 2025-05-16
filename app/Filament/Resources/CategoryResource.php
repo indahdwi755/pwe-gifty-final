@@ -18,7 +18,7 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     public static function form(Form $form): Form
     {
@@ -42,15 +42,20 @@ class CategoryResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable(),
             ])
+            ->emptyStateHeading('No categories yet')
+            ->emptyStateDescription('Start by adding your first category so you can organize your products.')
+            ->emptyStateIcon('heroicon-o-face-frown')
+
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

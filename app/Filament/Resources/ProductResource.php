@@ -83,7 +83,7 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('image')->circular(),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('category.name'),
-                Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('description')->limit(25),
                 Tables\Columns\TextColumn::make('stock'),
                 Tables\Columns\TextColumn::make('price'),
 
@@ -92,6 +92,10 @@ class ProductResource extends Resource
                     ->label('Promo')
                     ->sortable(),
             ])
+            ->emptyStateHeading('No products listed')
+            ->emptyStateDescription('Let’s add some amazing gifts.')
+            ->emptyStateIcon('heroicon-o-face-frown')
+
             ->filters([
                 // Optionally add filter for promo status
                 Tables\Filters\TernaryFilter::make('is_promo')
@@ -99,10 +103,11 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

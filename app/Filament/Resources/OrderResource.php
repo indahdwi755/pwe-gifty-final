@@ -17,7 +17,7 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
@@ -63,6 +63,10 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('address')->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime(),
             ])
+            ->emptyStateHeading('Still waiting for orders')
+            ->emptyStateDescription('Your orders will show up here when customers start buying.')
+            ->emptyStateIcon('heroicon-o-face-frown')
+
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -73,6 +77,7 @@ class OrderResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
