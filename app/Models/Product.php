@@ -13,12 +13,15 @@ class Product extends Model
         'category_id',
         'stock',
         'price',
+        'promo_price',
         'image',
         'is_promo',
     ];
 
     protected $casts = [
         'is_promo' => 'boolean',   // ■ pastikan casting Boolean
+        'price' => 'decimal:2',
+        'promo_price' => 'decimal:2',
     ];
 
     public function category()

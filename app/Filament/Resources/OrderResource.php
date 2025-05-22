@@ -23,31 +23,35 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                Forms\Components\TextInput::make('customer_name')
                     ->required()
-                    ->searchable(),
+                    ->label('Nama Pemesan'),
     
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
                     ->required()
-                    ->searchable(),
-    
-                Forms\Components\Select::make('transaction_id')
-                    ->relationship('transaction', 'id')
-                    ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Produk'),
     
                 Forms\Components\TextInput::make('total_price')
                     ->numeric()
-                    ->required(),
+                    ->required()
+                    ->label('Total Harga'),
     
-                Forms\Components\TextInput::make('status')
-                    ->default('packing')
-                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'processing' => 'Diproses',
+                        'packing' => 'Packing',
+                        'shipped' => 'Dikirim',
+                        'delivered' => 'Diterima'
+                    ])
+                    ->default('processing')
+                    ->required()
+                    ->label('Status'),
     
                 Forms\Components\Textarea::make('address')
-                    ->required(),
+                    ->required()
+                    ->label('Alamat'),
             ]);
     }
     
@@ -55,24 +59,51 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')->label('User')->searchable(),
-                Tables\Columns\TextColumn::make('product.name')->label('Product')->searchable(),
-                Tables\Columns\TextColumn::make('transaction.id')->label('Transaction'),
-                Tables\Columns\TextColumn::make('total_price')->label('Total Price')->money('IDR'),
-                Tables\Columns\TextColumn::make('status')->label('Status')->searchable(),
-                Tables\Columns\TextColumn::make('address')->limit(30)->wrap(),
-                Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime(),
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->label('Nama Pemesan')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Produk')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->label('Total Harga')
+                    ->money('IDR')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'processing' => 'warning',
+                        'packing' => 'warning',
+                        'shipped' => 'info',
+                        'delivered' => 'success',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Alamat')
+                    ->limit(30)
+                    ->wrap(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Pemesanan')
+                    ->dateTime()
+                    ->sortable(),
             ])
-            ->emptyStateHeading('Still waiting for orders')
-            ->emptyStateDescription('Your orders will show up here when customers start buying.')
+            ->defaultSort('created_at', 'desc')
+            ->emptyStateHeading('Belum ada pesanan')
+            ->emptyStateDescription('Pesanan akan muncul di sini ketika pelanggan mulai membeli.')
             ->emptyStateIcon('heroicon-o-face-frown')
 
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'packed' => 'Packed',
-                        'shipped' => 'Shipped',
-                        'delivered' => 'Delivered',
+                        'processing' => 'Diproses',
+                        'packing' => 'Packing',
+                        'shipped' => 'Dikirim',
+                        'delivered' => 'Diterima'
                     ]),
             ])
             ->actions([

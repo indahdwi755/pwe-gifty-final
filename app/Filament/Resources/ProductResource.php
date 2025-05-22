@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Toggle;
+use Closure;
+use Filament\Notifications\Notification;
 
 class ProductResource extends Resource
 {
@@ -27,51 +29,96 @@ class ProductResource extends Resource
                 // Card wrapper
                 Forms\Components\Card::make()
                     ->schema([
-
                         // Image upload
                         Forms\Components\FileUpload::make('image')
                             ->label('Image')
-                            ->required(),
+                            ->required()
+                            ->directory('products'),
 
                         // Main grid for fields
-                        Forms\Components\Grid::make(5)
+                        Forms\Components\Grid::make(2)
                             ->schema([
+                                // Left column
+                                Forms\Components\Grid::make(1)
+                                    ->schema([
+                                        // Name
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Nama Produk')
+                                            ->placeholder('Masukkan nama produk')
+                                            ->required()
+                                            ->maxLength(255),
 
-                                // Name
-                                Forms\Components\TextInput::make('name')
-                                    ->label('Name')
-                                    ->placeholder('Name')
-                                    ->required(),
+                                        // Category relation
+                                        Forms\Components\Select::make('category_id')
+                                            ->label('Kategori')
+                                            ->relationship('category', 'name')
+                                            ->required()
+                                            ->searchable()
+                                            ->preload(),
 
-                                // Category relation
-                                Forms\Components\Select::make('category_id')
-                                    ->label('Category')
-                                    ->relationship('category', 'name')
-                                    ->required(),
+                                        // Description
+                                        Forms\Components\Textarea::make('description')
+                                            ->label('Deskripsi')
+                                            ->placeholder('Masukkan deskripsi produk')
+                                            ->required()
+                                            ->maxLength(1000),
+                                    ]),
 
-                                // Description
-                                Forms\Components\TextInput::make('description')
-                                    ->label('Description')
-                                    ->placeholder('Description')
-                                    ->required(),
+                                // Right column
+                                Forms\Components\Grid::make(1)
+                                    ->schema([
+                                        // Stock
+                                        Forms\Components\TextInput::make('stock')
+                                            ->label('Stok')
+                                            ->numeric()
+                                            ->default(0)
+                                            ->required()
+                                            ->minValue(0),
 
-                                // Stock
-                                Forms\Components\TextInput::make('stock')
-                                    ->label('Stock')
-                                    ->placeholder('Stock')
-                                    ->required(),
+                                        // Regular Price
+                                        Forms\Components\TextInput::make('price')
+                                            ->label('Harga Normal')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(0)
+                                            ->minValue(0),
 
-                                // Price
-                                Forms\Components\TextInput::make('price')
-                                    ->label('Price')
-                                    ->placeholder('Price')
-                                    ->required(),
+                                        // Promo Toggle and Price
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Toggle::make('is_promo')
+                                                    ->label('Aktifkan Promo')
+                                                    ->default(false)
+                                                    ->reactive()
+                                                    ->afterStateUpdated(function ($state, callable $set) {
+                                                        if (!$state) {
+                                                            $set('promo_price', null);
+                                                        }
+                                                    }),
 
-                                Toggle::make('is_promo')
-                                    ->label('Promo')
-                                    ->default(false),
+                                                Forms\Components\TextInput::make('promo_price')
+                                                    ->label('Harga Promo')
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->minValue(0)
+                                                    ->visible(fn ($get) => $get('is_promo'))
+                                                    ->required(fn ($get) => $get('is_promo'))
+                                                    ->live()
+                                                    ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                                        $normalPrice = $get('price');
+                                                        if ($state >= $normalPrice) {
+                                                            $set('promo_price', null);
+                                                            Notification::make()
+                                                                ->warning()
+                                                                ->title('Harga Promo Tidak Valid')
+                                                                ->body("Harga promo (Rp " . number_format($state, 0, ',', '.') . ") harus lebih kecil dari harga normal (Rp " . number_format($normalPrice, 0, ',', '.') . ")")
+                                                                ->send();
+                                                        }
+                                                    })
+                                                    ->helperText('Contoh: Jika harga normal Rp 150.000, maka harga promo harus di bawah Rp 150.000'),
+                                            ]),
+                                    ]),
                             ]),
-
                     ]),
             ]);
     }
@@ -80,26 +127,47 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')->circular(),
-                Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('category.name'),
-                Tables\Columns\TextColumn::make('description')->limit(25),
-                Tables\Columns\TextColumn::make('stock'),
-                Tables\Columns\TextColumn::make('price'),
-
-                // Promo indicator
+                Tables\Columns\ImageColumn::make('image')
+                    ->circular()
+                    ->defaultImageUrl(asset('default-image.jpg')),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Kategori')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->wrap(),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(25)
+                    ->tooltip(function ($record) {
+                        return $record?->description;
+                    }),
+                Tables\Columns\TextColumn::make('stock')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->money('IDR')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('promo_price')
+                    ->money('IDR')
+                    ->visible(fn ($record) => $record && $record->is_promo)
+                    ->sortable(),
                 Tables\Columns\BooleanColumn::make('is_promo')
                     ->label('Promo')
                     ->sortable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No products listed')
-            ->emptyStateDescription('Let’s add some amazing gifts.')
+            ->emptyStateDescription("Let's add some amazing gifts.")
             ->emptyStateIcon('heroicon-o-face-frown')
-
             ->filters([
-                // Optionally add filter for promo status
                 Tables\Filters\TernaryFilter::make('is_promo')
-                    ->label('Promo Status'),
+                    ->label('Promo Status')
+                    ->queries(
+                        true: fn ($query) => $query->where('is_promo', true)->whereNotNull('promo_price'),
+                        false: fn ($query) => $query->where('is_promo', false)->orWhereNull('promo_price'),
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -107,7 +175,7 @@ class ProductResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -8,18 +8,20 @@ use Illuminate\Support\Facades\Auth;
 class SesiController extends Controller
 {
     function index()
-{
-    return view('login');
-}
-
-
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.login');
+    }
 
     function login(Request $request){
         $request->validate([
-            'email'=>'required',
+            'email'=>'required|email',
             'password'=>'required'
         ],[
             'email.required'=>'Email Wajib Diisi',
+            'email.email'=>'Format Email Tidak Valid',
             'password.required'=>'Password Wajib Diisi',
         ]);
 
@@ -29,15 +31,18 @@ class SesiController extends Controller
         ];
 
         if(Auth::attempt($infologin)){
+            $request->session()->regenerate();
             return redirect()->route('dashboard');
         } else{
-            return redirect('')->withErrors('Username Dan Password Yang Dimasukkan Tidak Sesuai')->withInput();
+            return redirect()->route('login')
+                ->withErrors('Email atau password yang dimasukkan tidak sesuai')
+                ->withInput($request->except('password'));
         }
     }
 
     function logout()
     {
         Auth::logout();
-        return redirect('');
+        return redirect()->route('login');
     }
 }

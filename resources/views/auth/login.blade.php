@@ -88,6 +88,9 @@
         <button name="submit" type="submit" class="btn btn-primary">Login</button>
       </div>
     </form>
+    <div class="text-center mt-3">
+      <p class="mb-0">Don't have an account? <a href="{{ route('register') }}" class="text-decoration-none" style="color: #ff1493;">Register here</a></p>
+    </div>
   </div>
 </body>
 </html>
