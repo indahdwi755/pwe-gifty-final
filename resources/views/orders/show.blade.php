@@ -284,7 +284,7 @@
                 </div>
                 <div class="row">
                     <div class="col-5">
-                        <span class="label">Total Pembayaran</span>
+                        <span class="label">Total pembayaran</span>
                     </div>
                     <div class="col-7">
                         <span class="total-price">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
